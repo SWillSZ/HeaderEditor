@@ -29,8 +29,9 @@ public class HeaderEditor
 	private JTextField toOpen;
 	private JButton editHeaders;
 	private JButton changeDirectory;
+	
 	private String currentDirectory;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -113,7 +114,9 @@ public class HeaderEditor
 			if (chosen == 0)
 			{
 			toOpen.setText(fc.getSelectedFile().getAbsolutePath());
-			changeDirectory.setText("Change Directory");	
+			currentDirectory = fc.getSelectedFile().getAbsolutePath();
+			currentDirectory = "Change Directory";
+			System.out.println("DeleteMe");
 			}
 		}
 		// We populate the JList with the files in the directory
