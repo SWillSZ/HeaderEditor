@@ -2,11 +2,11 @@ import java.awt.Component;
 import java.awt.EventQueue;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -14,6 +14,9 @@ import javax.swing.ListSelectionModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Vector;
+
 
 
 
@@ -30,7 +33,9 @@ public class HeaderEditor
 	private JButton editHeaders;
 	private JButton changeDirectory;
 	
-	private String currentDirectory;
+	private File selected;
+	private Vector<File> filesToChange;
+	private Vector<String> fileNamesToChange;
 	
 	/**
 	 * Launch the application.
@@ -60,6 +65,7 @@ public class HeaderEditor
 	 */
 	private void initialize() 
 	{
+	filesToChange = new Vector<File>();
 	frame = new JFrame();
 	frame.getContentPane().setLayout(null);
 	frame.setBounds(100, 100, FRAME_WIDTH, FRAME_HEIGHT);
@@ -79,6 +85,7 @@ public class HeaderEditor
 	
     editHeaders = new JButton("Edit Headers");
 	editHeaders.setBounds(BORDER,60,(FRAME_WIDTH-2*BORDER)/2+30,22);
+	editHeaders.addActionListener(editHeadersListener);
 	frame.add(editHeaders);
 	
     changeDirectory = new JButton("Choose Directory");
@@ -88,7 +95,7 @@ public class HeaderEditor
 	
 	
 	
-	String[] selections = {"Placeholder 1", "Placeholder 2" };
+	String[] selections = {""};
     list = new JList<String>(selections);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     JScrollPane scrollPane = new JScrollPane(list);
@@ -110,19 +117,59 @@ public class HeaderEditor
 		Component[] componentsToModify = ((JPanel)fileChooserComponents[4]).getComponents();
 		componentsToModify[0].setVisible(false);
 		// We actually use the JFileChooser
+	    // We update all the GUI elements when a folder is chosen
 		int chosen = fc.showOpenDialog(changeDirectory);
 			if (chosen == 0)
 			{
-			toOpen.setText(fc.getSelectedFile().getAbsolutePath());
-			currentDirectory = fc.getSelectedFile().getAbsolutePath();
-			currentDirectory = "Change Directory";
-			System.out.println("DeleteMe");
+			selected = fc.getSelectedFile();
+					if (selected.exists())
+					{
+					toOpen.setText(selected.getAbsolutePath());
+					File[] contentFiles = selected.listFiles();
+					filesToChange=new Vector<File>();
+					fileNamesToChange=new Vector<String>();
+						for (int count=0; count <contentFiles.length; count++)
+						{
+						// We find the .docx files, and save those
+							if (contentFiles[count].getName().length() > 5 && contentFiles[count].getName().substring(contentFiles[count].getName().length()-5).equals(".docx"))
+							{
+							filesToChange.addElement(contentFiles[count]);
+							fileNamesToChange.addElement(contentFiles[count].getName());
+							}
+						}
+					list.setListData(fileNamesToChange);
+					}
+					else
+					{
+					JOptionPane.showMessageDialog(frame, "The Selected Directory Does Not Exist");
+					}
 			}
 		}
 		// We populate the JList with the files in the directory
 	}
+	
 
 	private changeButtonListener changeListener = new changeButtonListener();
-
+	
+	class editHeadersButtonListener implements ActionListener 
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			if (filesToChange.size() == 0)
+			{
+			JOptionPane.showMessageDialog(frame, "No files to edit");
+			}
+			else
+			{
+			String[] returned = FileEditorTools.returnHeaders(filesToChange.get(0));
+				for (int count=0;count<returned.length;count++)
+				{
+				System.out.println(returned[count]);
+				}
+			}
+		}
+	}
+	
+	private editHeadersButtonListener editHeadersListener = new editHeadersButtonListener();
 
 }
