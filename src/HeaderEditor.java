@@ -151,6 +151,8 @@ public class HeaderEditor
 
 	private changeButtonListener changeListener = new changeButtonListener();
 	
+	
+	// When we edit the headers. Does a lot of things
 	class editHeadersButtonListener implements ActionListener 
 	{
 		public void actionPerformed(ActionEvent e) 
@@ -161,10 +163,23 @@ public class HeaderEditor
 			}
 			else
 			{
-			String[] returned = FileEditorTools.returnHeaders(filesToChange.get(0));
-				for (int count=0;count<returned.length;count++)
+				for (int count = 0;count<filesToChange.size();count++)
 				{
-				System.out.println(returned[count]);
+				FileHeaderData extractedData = FileEditorTools.returnHeader(filesToChange.get(count));
+					if (extractedData != null)
+					{
+					System.out.println(extractedData.numHeaders);	
+					System.out.println(extractedData.foundIn.getName());
+						for (int count2 = 0;count2<extractedData.numHeaders;count2++)
+						{
+						System.out.println("    "+extractedData.headersFound[count2]);
+						}
+					}
+					else
+					{
+					System.out.println(filesToChange.get(count).getName()+" does not have a header. Please only include documents with headers in the folder");
+					break;
+					}
 				}
 			}
 		}
