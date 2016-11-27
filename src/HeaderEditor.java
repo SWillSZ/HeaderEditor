@@ -22,7 +22,7 @@ import java.util.Vector;
 
 public class HeaderEditor 
 {
-	
+	//We generate the frame
 	private int FRAME_WIDTH = 280;
 	private int FRAME_HEIGHT = 520;
 	private int BORDER = 30;
